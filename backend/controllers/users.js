@@ -93,7 +93,6 @@ module.exports.updateAvatar = (req, res) => {
 
 module.exports.login = (req, res) => {
   const { email, password } = req.body;
-  // const owner = req.user._id;
 
   User.findByCredentials(email, password)
     .then((user) => {
@@ -113,6 +112,29 @@ module.exports.login = (req, res) => {
       if (err.name === "ValidationError") {
         res.status(400).send({ message: err.message });
       } else if (err.name === "CastError") {
+        res.status(400).send({ message: "Неверный формат ID" });
+      } else {
+        // иначе - говорим что 500 серверу плохо
+        res.status(500).send({ message: err.message });
+      }
+    });
+};
+
+module.exports.getMe = (req, res) => {
+  User.findById(req.user._id)
+    .then((user) => {
+      if (!user) {
+        res.status(404).send({ message: "Не найден пользователь с таким ID" });
+      } else {
+        console.log(user);
+        res.status(200).send(user);
+      }
+    })
+    .catch((err) => {
+      if (err.name === "ValidationError") {
+        res.status(400).send({ message: err.message });
+      } else if (err.name === "CastError") {
+        // console.log(user);
         res.status(400).send({ message: "Неверный формат ID" });
       } else {
         // иначе - говорим что 500 серверу плохо
