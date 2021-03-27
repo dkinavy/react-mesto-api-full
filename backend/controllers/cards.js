@@ -28,6 +28,8 @@ module.exports.deleteCard = (req, res) => {
     .then((card) => {
       if (!card) {
         res.status(404).send({ message: "Не найдена карточка с таким ID" });
+      } else if (card.owner.toString() !== req.user._id) {
+        res.status(403).send({ message: "Нельзя удалять чужие картинки" });
       } else {
         res.send({ data: card });
       }
