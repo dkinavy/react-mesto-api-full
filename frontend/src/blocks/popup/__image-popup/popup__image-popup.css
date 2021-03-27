@@ -1,0 +1,10 @@
+.popup__image-popup{
+    max-width: 75vw;
+    max-height: 75vh;
+}
+.popup__image-container {
+
+    position: relative;
+    box-sizing: border-box;
+
+  }

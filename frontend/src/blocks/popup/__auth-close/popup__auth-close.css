@@ -1,0 +1,22 @@
+.popup__auth-close {
+  width: 60px;
+  height: 60px;
+  background-image: url(../../../images/CloseIcon.svg);
+  background-size: cover;
+  position: absolute;
+  top: -49px;
+  right: -47px;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  transition: opacity 0.2s linear;
+}
+
+.popup__auth-close:hover {
+  opacity: 0.8;
+  cursor: pointer;
+}
+
+.popup__auth-close:focus {
+  outline: none;
+}

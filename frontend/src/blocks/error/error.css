@@ -1,0 +1,12 @@
+.error {
+    font-family: Inter, Arial, Helvetica, sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 15px;
+    color: #FF0000;
+    display: block;
+    margin: 5px 0 0 0px;
+    box-sizing: border-box;
+
+  }

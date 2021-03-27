@@ -1,0 +1,26 @@
+.element__icon {
+    width: 20px;
+    height: 18px;
+    margin: 0;
+    /* margin-left: 25px; */
+    background-image: url(../../../images/Vector.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    border: none;
+    background-color: transparent;
+    outline: none;
+    display: block;
+    background-size: contain;
+    cursor: pointer;
+}
+.element__icon:hover {
+    
+    opacity: 0.6;
+    transition: opacity 0.3s linear;
+  }
+  .element__icon_active {
+    opacity: 1;
+    background: url(../../../images/Vectoractive.svg) center no-repeat;
+    color: black;
+    background-size: contain;
+  }

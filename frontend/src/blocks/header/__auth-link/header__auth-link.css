@@ -1,0 +1,10 @@
+.header__auth-link {
+  color: #ffff;
+  text-decoration: none;
+  align-self: center;
+  animation: fadeOut 0.2s;
+}
+
+.header__auth-link:hover {
+  opacity: 0.8;
+}

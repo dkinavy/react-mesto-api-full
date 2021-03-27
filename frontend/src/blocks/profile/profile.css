@@ -1,0 +1,16 @@
+.profile{
+    margin-top: 36px;
+    display:grid;
+    align-items: center;
+
+    grid-template-columns: 169px 1fr 150px;
+}
+@media screen and (max-width: 750px){
+    .profile {
+        grid-auto-flow: column;
+        grid-template-columns:none;
+        grid-template-rows: 128px 112px 50px;
+        justify-content: center;
+
+    }
+  }
