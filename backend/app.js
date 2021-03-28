@@ -36,8 +36,12 @@ app.use(auth);
 app.use("/", users);
 app.use("/", cards);
 
-app.use((req, res) => {
-  res.status(404).send({ message: "Запрашиваемый ресурс не найден" });
+//финальный обработчик ошибок
+app.use((err, _req, res, _next) => {
+  const { status = 500, message } = err;
+  res.status(status).send({
+    message: status === 500 ? "Внутренняя ошибка сервера" : message,
+  });
 });
 
 app.listen(PORT, () => {
