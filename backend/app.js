@@ -4,7 +4,7 @@ const users = require("./routes/users.js");
 const cards = require("./routes/cards.js");
 const bodyParser = require("body-parser");
 const auth = require("./middlewares/auth");
-
+const { celebrate, Joi, errors } = require("celebrate");
 const { login, createUser } = require("./controllers/users");
 const { PORT = 3000 } = process.env;
 
@@ -28,14 +28,37 @@ app.use(bodyParser.urlencoded({ extended: true }));
 //   next();
 // });
 
-app.post("/signin", login);
-app.post("/signup", createUser);
+app.post(
+  "/signin",
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+    }),
+  }),
+  login
+);
+app.post(
+  "/signup",
+  celebrate({
+    body: Joi.object().keys({
+      email: Joi.string().required().email(),
+      password: Joi.string().required().min(8),
+    }),
+  }),
+  createUser
+);
 // Все что ниже потребует авторизацию
 app.use(auth);
 
 app.use("/", users);
 app.use("/", cards);
 
+app.use(errors());
+
+app.use("*", (req, res, next) => {
+  next(new NotFoundError({ message: "Запрашиваемый ресурс не найден" }));
+});
 //финальный обработчик ошибок
 app.use((err, _req, res, _next) => {
   const { status = 500, message } = err;
