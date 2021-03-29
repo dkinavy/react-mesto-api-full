@@ -1,6 +1,8 @@
 const jwt = require("jsonwebtoken");
 const AuthorizationError = require("../errors/AuthorizationError");
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 const auth = (req, _res, next) => {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith("Bearer ")) {
@@ -9,7 +11,10 @@ const auth = (req, _res, next) => {
   const token = authorization.replace("Bearer ", "");
   let payload;
   try {
-    payload = jwt.verify(token, "some-secret-key");
+    payload = jwt.verify(
+      token,
+      `${NODE_ENV === "production" ? JWT_SECRET : "some-secret-key"}`
+    );
     //console.log(req.body);
   } catch (err) {
     // Вот Эта ошибка возникает несколько раз в секунду

@@ -162,8 +162,8 @@ class Api {
 }
 
 const yandexApi = new Api({
-  baseUrl: "http://localhost:3001",
-  baseAuthUrl: "http://localhost:3001",
+  baseUrl: "http://api.mestoforday.nomoredomains.icu",
+  baseAuthUrl: "http://api.mestoforday.nomoredomains.icu",
   headers: {
     "Content-Type": "application/json",
   },

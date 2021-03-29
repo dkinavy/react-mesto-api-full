@@ -115,7 +115,6 @@ function App() {
       })
       .catch((error) => console.log(error));
   }
-
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(!isEditProfilePopupOpen);
   }

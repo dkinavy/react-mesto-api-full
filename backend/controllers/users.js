@@ -5,6 +5,8 @@ const ConflictError = require("../errors/ConflictError");
 const BadRequestError = require("../errors/BadRequestError");
 const NotFoundError = require("../errors/NotFoundError");
 
+const { NODE_ENV, JWT_SECRET } = process.env;
+
 module.exports.createUser = (req, res, next) => {
   const { email, password, name, about, avatar } = req.body;
   bcrypt
@@ -115,9 +117,13 @@ module.exports.login = (req, res, next) => {
   User.findByCredentials(email, password)
     .then((user) => {
       console.log(user);
-      const token = jwt.sign({ _id: user._id }, "some-secret-key", {
-        expiresIn: "7d",
-      });
+      const token = jwt.sign(
+        { _id: user._id },
+        NODE_ENV === "production" ? JWT_SECRET : "some-secret-key",
+        {
+          expiresIn: "7d",
+        }
+      );
       res.send({ token, data: user });
       // }
     })
