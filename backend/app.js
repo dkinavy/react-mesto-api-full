@@ -1,5 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
+require("dotenv").config();
+
+console.log(process.env.NODE_ENV); // production?
 const cors = require("cors");
 const users = require("./routes/users.js");
 const cards = require("./routes/cards.js");
