@@ -15,7 +15,7 @@ const { requestLogger, errorLogger } = require("./middlewares/logger");
 const app = express();
 
 const corsOptions = {
-  origin: "http://http://mestoforday.nomoredomains.icu",
+  origin: "http://mestoforday.nomoredomains.icu",
   credentials: true,
 };
 
