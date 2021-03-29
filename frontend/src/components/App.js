@@ -15,7 +15,7 @@ import ImagePopup from "./ImagePopup";
 import yandexApi from "../utils/api";
 import InfoTooltip from "./InfoTooltip";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory, Redirect } from "react-router-dom";
 import errorIcon from "../images/auth-error.svg";
 import okIcon from "../images/auth-ok.svg";
 
@@ -31,7 +31,7 @@ function App() {
     name: "",
     link: "",
   });
-  const [currentUser, setCurrentUser] = React.useState({});
+  const [currentUser, setCurrentUser] = useState({});
   const [Email, setEmail] = useState("");
 
   const [isLoggedIn, setLoggedIn] = React.useState(false);
@@ -44,42 +44,46 @@ function App() {
   const history = useHistory();
 
   React.useEffect(() => {
-    handleTokenCheck();
+    //handleTokenCheck();
     yandexApi
       .getUserInfo()
       .then((data) => {
         setCurrentUser(data);
       })
       .catch((error) => console.log(error));
-  }, []);
+  }, [isLoggedIn]);
 
   React.useEffect(() => {
     yandexApi
       .getInitialCards()
       .then((data) => {
-        // const cardsData = data;
-        setCards(data);
+        setCards(data.data);
       })
       .catch((err) => {
         console.log(err);
       });
+  }, [isLoggedIn]);
+
+  React.useEffect(() => {
+    handleTokenCheck();
   }, []);
 
   function handleTokenCheck() {
-    if (localStorage.getItem("jwt")) {
-      const jwt = localStorage.getItem("jwt");
+    const jwt = localStorage.getItem("jwt");
+    console.log(jwt);
+    if (jwt) {
       yandexApi
         .checkToken(jwt)
         .then((res) => {
-          if (res) {
-            setLoggedIn(true);
-            setEmail(res.data.email);
-          }
+          console.log(res);
+          setLoggedIn(true);
+          setEmail(res.email);
           history.push("/");
         })
         .catch((err) => console.log(err));
     }
   }
+
   function handleCardDelete(card) {
     yandexApi
       .deleteCard(card._id)
@@ -94,20 +98,24 @@ function App() {
 
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
+    const isLiked = card.likes.some((i) => i === currentUser._id);
     //console.log(isLiked)
     // Отправляем запрос в API и получаем обновлённые данные карточки
     yandexApi
       .changeLikeCardStatus(card._id, isLiked)
       .then((newCard) => {
         // Формируем новый массив на основе имеющегося, подставляя в него новую карточку
-        const newCards = cards.map((c) => (c._id === card._id ? newCard : c));
+
+        const newCards = cards.map((c) =>
+          c._id === card._id ? newCard.data : c
+        );
         // Обновляем стейт
+
         setCards(newCards);
       })
       .catch((error) => console.log(error));
-    // А разве не достаточно catch делать в самих методах api ? по идее же все обращения к серверу их используют
   }
+
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(!isEditProfilePopupOpen);
   }
@@ -131,21 +139,11 @@ function App() {
   function handleCardClick(card) {
     setIsSelectedCard(card);
   }
-
-  function handleUpdateAvatar(data) {
-    yandexApi
-      .setUserAvatar(data)
-      .then((data) => {
-        setCurrentUser(data);
-        closeAllPopups();
-      })
-      .catch((error) => console.log(error));
-  }
   function handleAddPlaceSubmit(data) {
     yandexApi
       .addCard(data)
       .then((newCard) => {
-        setCards([newCard, ...cards]);
+        setCards([newCard.card, ...cards]);
         closeAllPopups();
       })
       .catch((error) => {
@@ -157,23 +155,39 @@ function App() {
         console.log(error);
       });
   }
+  async function handleUpdateAvatar(data) {
+    try {
+      await yandexApi.setUserAvatar(data).then((avatar) => {
+        console.log(avatar.data);
+        setCurrentUser(avatar.data);
 
-  function handleUpdateUser(data) {
-    yandexApi
-      .setUserInfo(data)
-      .then((data) => {
-        setCurrentUser(data);
         closeAllPopups();
-      })
-      .catch((error) => console.log(error));
+      });
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  const handleLogin = (email, password) => {
-    //////////////////////////////
+  async function handleUpdateUser(data) {
+    try {
+      await yandexApi.setUserInfo(data).then((user) => {
+        setCurrentUser(user.data);
+        closeAllPopups();
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  function handleLogin(email, password) {
     yandexApi
       .signIn(email, password)
       .then((data) => {
         if (data.token) {
+          localStorage.setItem("jwt", data.token);
+          console.log(data);
+          setEmail(email);
+          setLoggedIn(true);
           history.push("/");
         }
       })
@@ -184,11 +198,7 @@ function App() {
           text: "Что-то пошло не так! Попробуйте ещёраз",
         });
       });
-
-    ///////////////////////////////
-    setEmail(email);
-    setLoggedIn(true);
-  };
+  }
 
   function onSignOut() {
     localStorage.removeItem("jwt");
@@ -197,14 +207,10 @@ function App() {
   }
 
   const handleReg = (email, password) => {
-    // Ipmort API requests
     yandexApi
       .signUp(email, password)
       .then((data) => {
         if (data) {
-          //onReg();
-          console.log(data);
-
           setTooltipInfo({
             isOpen: true,
             icon: okIcon,
@@ -227,14 +233,13 @@ function App() {
           text: "Что-то пошло не так! Попробуйте ещё раз",
         });
       });
-    /////////////////////////////////////////////
   };
 
   return (
     <CurrentUserContext.Provider value={currentUser}>
       <div className="page">
         <div className="page__container">
-          <Header onSignOut={onSignOut} email={Email} />
+          <Header onSignOut={onSignOut} email={Email} isLoggedIn={isLoggedIn} />
           <Switch>
             <ProtectedRoute
               exact
@@ -255,6 +260,9 @@ function App() {
             </Route>
             <Route path="/signin">
               <Login onLogin={handleLogin} tooltipInfo={setTooltipInfo} />
+            </Route>
+            <Route>
+              {isLoggedIn ? <Redirect to="/" /> : <Redirect to="/signin" />}
             </Route>
           </Switch>
           <Footer />

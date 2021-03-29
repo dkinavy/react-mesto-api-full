@@ -13,9 +13,9 @@ module.exports.getCards = (req, res) => {
 
 module.exports.createCard = (req, res, next) => {
   const { name, link } = req.body;
-
+  //data.card ??
   Card.create({ name, link, owner: req.user._id })
-    .then((card) => res.send({ data: card }))
+    .then((card) => res.send({ card: card }))
     .catch((err) => {
       // ValidationError - говорим что 400 бед реквест
       if (err.name === "ValidationError") {

@@ -6,7 +6,14 @@ class Api {
     this._baseAuthUrl = options.baseAuthUrl;
     this._headers = options.headers;
   }
-
+  getHeader() {
+    const token = localStorage.getItem("jwt");
+    console.log(token);
+    return {
+      ...this._headers,
+      Authorization: `Bearer ${token}`,
+    };
+  }
   _getResponseData(res) {
     if (!res.ok) {
       return Promise.reject(`Ошибка: ${res.status}`);
@@ -16,51 +23,48 @@ class Api {
 
   getInitialCards() {
     return fetch(this._baseUrl + "/cards", {
-      headers: this._headers,
-    })
-      .then(this._getResponseData)
-      .catch((err) => alert(err));
+      headers: this.getHeader(),
+    }).then(this._getResponseData);
+    //.catch((err) => alert(err));
   }
 
   getUserInfo() {
     return fetch(this._baseUrl + "/users/me", {
-      headers: this._headers,
-    })
-      .then(this._getResponseData)
-      .catch((err) => alert(err));
+      headers: this.getHeader(),
+    }).then(this._getResponseData);
+    //.catch((err) => alert(err));
   }
   // другие методы работы с API
   setUserInfo(info) {
     //console.log(info)
     return fetch(this._baseUrl + "/users/me", {
       method: "PATCH",
-      headers: this._headers,
+      headers: this.getHeader(),
       body: JSON.stringify({
         name: info.name,
         about: info.about,
       }),
-    })
-      .then(this._getResponseData)
-      .catch((err) => alert(err));
+    }).then(this._getResponseData);
+    //.catch((err) => alert(err));
   }
   setUserAvatar(avatar) {
+    console.log("а что такое аватар" + avatar);
     console.log(avatar);
     return fetch(this._baseUrl + "/users/me/avatar", {
       method: "PATCH",
-      headers: this._headers,
+      headers: this.getHeader(),
       body: JSON.stringify({
         avatar: avatar.link,
       }),
-    })
-      .then(this._getResponseData)
-      .catch((err) => alert(err));
+    }).then(this._getResponseData);
+    //.catch((err) => alert(err));
   }
 
   addCard(data) {
-    console.log(data);
+    //console.log(data);
     return fetch(this._baseUrl + "/cards", {
       method: "POST",
-      headers: this._headers,
+      headers: this.getHeader(),
       body: JSON.stringify({
         name: data.name,
         link: data.link,
@@ -72,7 +76,7 @@ class Api {
   deleteCard(id) {
     return fetch(`${this._baseUrl}/cards/${id}`, {
       method: "DELETE",
-      headers: this._headers,
+      headers: this.getHeader(),
     })
       .then(this._getResponseData)
       .catch((err) => alert(err));
@@ -80,7 +84,7 @@ class Api {
   deleteLike(id) {
     return fetch(`${this._baseUrl}/cards/${id}/likes`, {
       method: "DELETE",
-      headers: this._headers,
+      headers: this.getHeader(),
     })
       .then(this._getResponseData)
       .catch((err) => alert(err));
@@ -89,7 +93,7 @@ class Api {
   putLike(id) {
     return fetch(`${this._baseUrl}/cards/${id}/likes`, {
       method: "PUT",
-      headers: this._headers,
+      headers: this.getHeader(),
     })
       .then(this._getResponseData)
       .catch((err) => alert(err));
@@ -139,7 +143,7 @@ class Api {
       .then(this._getResponseData)
       .then((data) => {
         if (data) {
-          console.log(data);
+          //console.log(data);
           return data;
         } else {
           return;
@@ -150,11 +154,7 @@ class Api {
   checkToken(token) {
     return fetch(`${this._baseAuthUrl}/users/me`, {
       method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: this.getHeader(),
     })
       .then(this._getResponseData)
       .then((data) => data);
@@ -162,10 +162,9 @@ class Api {
 }
 
 const yandexApi = new Api({
-  baseUrl: "https://mesto.nomoreparties.co/v1/cohort-18",
-  baseAuthUrl: "https://auth.nomoreparties.co",
+  baseUrl: "http://localhost:3001",
+  baseAuthUrl: "http://localhost:3001",
   headers: {
-    authorization: "a3f1f5fe-630d-4fb3-8d0f-9700ef1ed1ff",
     "Content-Type": "application/json",
   },
 });

@@ -1,14 +1,20 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const cors = require("cors");
 const users = require("./routes/users.js");
 const cards = require("./routes/cards.js");
 const bodyParser = require("body-parser");
 const auth = require("./middlewares/auth");
 const { celebrate, Joi, errors } = require("celebrate");
 const { login, createUser } = require("./controllers/users");
-const { PORT = 3000 } = process.env;
-
+const { PORT = 3001 } = process.env;
+const { requestLogger, errorLogger } = require("./middlewares/logger");
 const app = express();
+
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+};
 
 mongoose.connect("mongodb://localhost:27017/mestodb", {
   useNewUrlParser: true,
@@ -17,6 +23,9 @@ mongoose.connect("mongodb://localhost:27017/mestodb", {
   useUnifiedTopology: true,
 });
 
+app.use("*", cors(corsOptions));
+
+app.use(requestLogger); // подключаем логгер запросов
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -41,10 +50,12 @@ app.post(
 app.post(
   "/signup",
   celebrate({
-    body: Joi.object().keys({
-      email: Joi.string().required().email(),
-      password: Joi.string().required().min(8),
-    }),
+    body: Joi.object()
+      .keys({
+        email: Joi.string().required().email(),
+        password: Joi.string().required().min(8),
+      })
+      .unknown(true),
   }),
   createUser
 );
@@ -54,13 +65,11 @@ app.use(auth);
 app.use("/", users);
 app.use("/", cards);
 
+app.use(errorLogger);
 app.use(errors());
 
-app.use("*", (req, res, next) => {
-  next(new NotFoundError({ message: "Запрашиваемый ресурс не найден" }));
-});
 //финальный обработчик ошибок
-app.use((err, _req, res, _next) => {
+app.use((err, req, res, next) => {
   const { status = 500, message } = err;
   res.status(status).send({
     message: status === 500 ? "Внутренняя ошибка сервера" : message,

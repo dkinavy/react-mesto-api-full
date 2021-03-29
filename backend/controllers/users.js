@@ -60,14 +60,16 @@ module.exports.updateUser = (req, res, next) => {
   const { name, about } = req.body;
   const owner = req.user._id;
 
-  User.findByIdAndUpdate(owner, { name, about })
+  User.findByIdAndUpdate(owner, { about, name }, { new: true })
     .then((user) => {
+      console.log(user);
       if (!user) {
         // res.status(404).send({ message: "Не найден пользователь с таким ID" });
         const r = new NotFoundError("Не найден пользователь с таким ID");
         next(r);
+      } else {
+        res.send({ data: user });
       }
-      next(err);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
@@ -86,7 +88,7 @@ module.exports.updateAvatar = (req, res, next) => {
   const { avatar } = req.body;
   const owner = req.user._id;
 
-  User.findByIdAndUpdate(owner, { avatar })
+  User.findByIdAndUpdate(owner, { avatar }, { new: true })
     .then((user) => {
       if (!user) {
         const r = new NotFoundError("Не найден пользователь с таким ID");
