@@ -1,10 +1,11 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 // import { Link, useHistory } from "react-router-dom";
 import AuthWithForm from "./AuthWithForm";
 // import yandexApi from "../utils/api";
 // import errorIcon from "../images/auth-error.svg";
 
-function Login({ tooltipInfo, onLogin }) {
+function Login({ onLogin }) {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
 

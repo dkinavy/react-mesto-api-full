@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import React from "react";
 import logo from "../images/mesto.svg";
 import { Link, useLocation } from "react-router-dom";
