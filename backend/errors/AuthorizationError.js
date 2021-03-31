@@ -4,6 +4,7 @@ class AuthorizationError extends Error {
     this.message = message;
     this.status = 401;
     this.name = "AuthorizationError";
+    this.statusCode = 401;
   }
 }
 

@@ -21,7 +21,6 @@ module.exports.createUser = (req, res, next) => {
         const r = new BadRequestError("Некорректные данные при регистрации");
         next(r);
       } else {
-        console.log(err);
         next(err);
       }
     })
@@ -50,7 +49,6 @@ module.exports.getUserById = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        // res.status(400).send({ message: "Неверный формат ID" });
         const r = new BadRequestError("Неверный формат ID");
         next(r);
       }
@@ -64,9 +62,7 @@ module.exports.updateUser = (req, res, next) => {
 
   User.findByIdAndUpdate(owner, { about, name }, { new: true })
     .then((user) => {
-      console.log(user);
       if (!user) {
-        // res.status(404).send({ message: "Не найден пользователь с таким ID" });
         const r = new NotFoundError("Не найден пользователь с таким ID");
         next(r);
       } else {
@@ -75,7 +71,6 @@ module.exports.updateUser = (req, res, next) => {
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        // res.status(400).send({ message: err.message });
         const r = new BadRequestError("Недопустимые символы");
         next(r);
       } else if (err.name === "CastError") {
@@ -116,7 +111,6 @@ module.exports.login = (req, res, next) => {
 
   User.findByCredentials(email, password)
     .then((user) => {
-      console.log(user);
       const token = jwt.sign(
         { _id: user._id },
         NODE_ENV === "production" ? JWT_SECRET : "some-secret-key",
@@ -125,11 +119,8 @@ module.exports.login = (req, res, next) => {
         }
       );
       res.send({ token, data: user });
-      // }
     })
     .catch((err) => {
-      console.log(err);
-
       next(err);
     });
 };
@@ -141,13 +132,10 @@ module.exports.getMe = (req, res, next) => {
         const r = new NotFoundError("Не найден пользователь с таким ID");
         next(r);
       } else {
-        console.log(user);
         res.status(200).send(user);
       }
     })
     .catch((err) => {
-      console.log(err);
-
       next(err);
     });
 };

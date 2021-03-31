@@ -8,7 +8,6 @@ class Api {
   }
   getHeader() {
     const token = localStorage.getItem("jwt");
-    console.log(token);
     return {
       ...this._headers,
       Authorization: `Bearer ${token}`,
@@ -32,11 +31,9 @@ class Api {
     return fetch(this._baseUrl + "/users/me", {
       headers: this.getHeader(),
     }).then(this._getResponseData);
-    //.catch((err) => alert(err));
   }
   // другие методы работы с API
   setUserInfo(info) {
-    //console.log(info)
     return fetch(this._baseUrl + "/users/me", {
       method: "PATCH",
       headers: this.getHeader(),
@@ -45,11 +42,8 @@ class Api {
         about: info.about,
       }),
     }).then(this._getResponseData);
-    //.catch((err) => alert(err));
   }
   setUserAvatar(avatar) {
-    console.log("а что такое аватар" + avatar);
-    console.log(avatar);
     return fetch(this._baseUrl + "/users/me/avatar", {
       method: "PATCH",
       headers: this.getHeader(),
@@ -57,11 +51,9 @@ class Api {
         avatar: avatar.link,
       }),
     }).then(this._getResponseData);
-    //.catch((err) => alert(err));
   }
 
   addCard(data) {
-    //console.log(data);
     return fetch(this._baseUrl + "/cards", {
       method: "POST",
       headers: this.getHeader(),
@@ -143,7 +135,6 @@ class Api {
       .then(this._getResponseData)
       .then((data) => {
         if (data) {
-          //console.log(data);
           return data;
         } else {
           return;

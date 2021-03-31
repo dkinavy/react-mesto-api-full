@@ -3,6 +3,7 @@ class ForbiddenError extends Error {
     super();
     this.message = message;
     this.status = 403;
+    this.statusCode = 403;
     this.name = "ForbiddenError";
   }
 }

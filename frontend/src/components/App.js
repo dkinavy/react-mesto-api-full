@@ -44,7 +44,6 @@ function App() {
   const history = useHistory();
 
   React.useEffect(() => {
-    //handleTokenCheck();
     yandexApi
       .getUserInfo()
       .then((data) => {
@@ -70,12 +69,10 @@ function App() {
 
   function handleTokenCheck() {
     const jwt = localStorage.getItem("jwt");
-    console.log(jwt);
     if (jwt) {
       yandexApi
         .checkToken(jwt)
         .then((res) => {
-          console.log(res);
           setLoggedIn(true);
           setEmail(res.email);
           history.push("/");
@@ -99,7 +96,6 @@ function App() {
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
     const isLiked = card.likes.some((i) => i === currentUser._id);
-    //console.log(isLiked)
     // Отправляем запрос в API и получаем обновлённые данные карточки
     yandexApi
       .changeLikeCardStatus(card._id, isLiked)
@@ -157,7 +153,6 @@ function App() {
   async function handleUpdateAvatar(data) {
     try {
       await yandexApi.setUserAvatar(data).then((avatar) => {
-        console.log(avatar.data);
         setCurrentUser(avatar.data);
 
         closeAllPopups();
@@ -184,7 +179,6 @@ function App() {
       .then((data) => {
         if (data.token) {
           localStorage.setItem("jwt", data.token);
-          console.log(data);
           setEmail(email);
           setLoggedIn(true);
           history.push("/");

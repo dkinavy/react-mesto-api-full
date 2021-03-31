@@ -15,10 +15,7 @@ const auth = (req, _res, next) => {
       token,
       `${NODE_ENV === "production" ? JWT_SECRET : "some-secret-key"}`
     );
-    //console.log(req.body);
   } catch (err) {
-    // Вот Эта ошибка возникает несколько раз в секунду
-    console.log(req.headers);
     throw new AuthorizationError("Необходима авторизация..");
   }
 

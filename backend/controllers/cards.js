@@ -84,7 +84,6 @@ module.exports.likeCard = (req, res, next) => {
 };
 
 module.exports.dislikeCard = (req, res, next) => {
-  console.log(req.params);
   Card.findByIdAndUpdate(
     req.params._id,
     { $pull: { likes: req.user._id } }, // убрать _id из массива
@@ -102,7 +101,6 @@ module.exports.dislikeCard = (req, res, next) => {
       }
     })
     .catch((err) => {
-      console.log(err);
       if (err.name === "CastError") {
         //res.status(400).send({ message: "Неверный формат ID" });
         const r = new BadRequestError("Неверный формат ID");
