@@ -53,10 +53,7 @@ app.post(
   celebrate({
     body: Joi.object()
       .keys({
-        email: Joi.string()
-          .required()
-          .email()
-          .message("Не похоже на почту чета совсем"),
+        email: Joi.string().required().email(),
         password: Joi.string().required().min(8),
       })
       .unknown(true),
@@ -72,13 +69,19 @@ app.use("/", cards);
 app.use(errorLogger);
 
 const errorHandling = (err, req, res, next) => {
+  console.log(err);
   //Если у нас ошибка является ошибкой Celebrate
   if (isCelebrateError(err)) {
+    console.log("xxxx");
     //То достаем из деталей ошибки тело (details это Map)
+    const errorParams = err.details.get("params");
     const errorBody = err.details.get("body");
-    // Возвращаем юзеру только свое сообщение без "сикретной" инфы про то что кроме мыла надо еще пароль
-    return res.send({
-      message: errorBody.message,
+    console.log(errorBody);
+    console.log(errorParams);
+
+    // Возвращаем юзеру только сообщение
+    return res.status(400).send({
+      message: errorParams ? errorParams.message : errorBody.message,
     });
   }
   return next(err);

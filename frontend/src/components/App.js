@@ -44,23 +44,15 @@ function App() {
   const history = useHistory();
 
   React.useEffect(() => {
-    yandexApi
-      .getUserInfo()
-      .then((data) => {
-        setCurrentUser(data);
-      })
-      .catch((error) => console.log(error));
+    yandexApi.getUserInfo().then((data) => {
+      setCurrentUser(data);
+    });
   }, [isLoggedIn]);
 
   React.useEffect(() => {
-    yandexApi
-      .getInitialCards()
-      .then((data) => {
-        setCards(data.data);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    yandexApi.getInitialCards().then((data) => {
+      setCards(data.data);
+    });
   }, [isLoggedIn]);
 
   React.useEffect(() => {
@@ -70,46 +62,35 @@ function App() {
   function handleTokenCheck() {
     const jwt = localStorage.getItem("jwt");
     if (jwt) {
-      yandexApi
-        .checkToken(jwt)
-        .then((res) => {
-          setLoggedIn(true);
-          setEmail(res.email);
-          history.push("/");
-        })
-        .catch((err) => console.log(err));
+      yandexApi.checkToken(jwt).then((res) => {
+        setLoggedIn(true);
+        setEmail(res.email);
+        history.push("/");
+      });
     }
   }
 
   function handleCardDelete(card) {
-    yandexApi
-      .deleteCard(card._id)
-      .then(() => {
-        const newCards = cards.filter((elem) => elem !== card);
-        setCards(newCards);
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    yandexApi.deleteCard(card._id).then(() => {
+      const newCards = cards.filter((elem) => elem !== card);
+      setCards(newCards);
+    });
   }
 
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
     const isLiked = card.likes.some((i) => i === currentUser._id);
     // Отправляем запрос в API и получаем обновлённые данные карточки
-    yandexApi
-      .changeLikeCardStatus(card._id, isLiked)
-      .then((newCard) => {
-        // Формируем новый массив на основе имеющегося, подставляя в него новую карточку
+    yandexApi.changeLikeCardStatus(card._id, isLiked).then((newCard) => {
+      // Формируем новый массив на основе имеющегося, подставляя в него новую карточку
 
-        const newCards = cards.map((c) =>
-          c._id === card._id ? newCard.data : c
-        );
-        // Обновляем стейт
+      const newCards = cards.map((c) =>
+        c._id === card._id ? newCard.data : c
+      );
+      // Обновляем стейт
 
-        setCards(newCards);
-      })
-      .catch((error) => console.log(error));
+      setCards(newCards);
+    });
   }
   function handleEditProfileClick() {
     setIsEditProfilePopupOpen(!isEditProfilePopupOpen);
@@ -147,30 +128,21 @@ function App() {
           icon: errorIcon,
           text: "Что-то пошло не так! Попробуйте ещё раз",
         });
-        console.log(error);
       });
   }
   async function handleUpdateAvatar(data) {
-    try {
-      await yandexApi.setUserAvatar(data).then((avatar) => {
-        setCurrentUser(avatar.data);
+    yandexApi.setUserAvatar(data).then((avatar) => {
+      setCurrentUser(avatar.data);
 
-        closeAllPopups();
-      });
-    } catch (error) {
-      console.log(error);
-    }
+      closeAllPopups();
+    });
   }
 
   async function handleUpdateUser(data) {
-    try {
-      await yandexApi.setUserInfo(data).then((user) => {
-        setCurrentUser(user.data);
-        closeAllPopups();
-      });
-    } catch (error) {
-      console.log(error);
-    }
+    yandexApi.setUserInfo(data).then((user) => {
+      setCurrentUser(user.data);
+      closeAllPopups();
+    });
   }
 
   function handleLogin(email, password) {
@@ -219,7 +191,6 @@ function App() {
         }
       })
       .catch((err) => {
-        console.log(err);
         setTooltipInfo({
           isOpen: true,
           icon: errorIcon,

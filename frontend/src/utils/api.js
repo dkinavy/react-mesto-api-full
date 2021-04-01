@@ -118,8 +118,7 @@ class Api {
         } else {
           return;
         }
-      })
-      .catch((err) => console.log(err));
+      });
   }
   signUp(email, password) {
     return fetch(`${this._baseAuthUrl}/signup`, {
@@ -139,8 +138,7 @@ class Api {
         } else {
           return;
         }
-      })
-      .catch((err) => console.log(err));
+      });
   }
   checkToken(token) {
     return fetch(`${this._baseAuthUrl}/users/me`, {
